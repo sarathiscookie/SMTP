@@ -13,6 +13,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+/* Route::get('/', function () {
     return view('welcome');
-});
+}); */
+
+/* List all categories subcategories and products */
+Route::get('/', 'ListController@index')->name('list');
+
+/* Store categories */
+Route::post('/category/store', 'ListController@store')->name('category.create');
+
+/* Store subcategories */
+Route::post('/subcategory/store', 'ListController@storeSubCategory')->name('subcategory.create');
+
+/* Store product */
+Route::post('/product/store', 'ListController@storeProduct')->name('product.create');
+
+
+
+/* Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home'); */
