@@ -19,7 +19,6 @@ class ListController extends Controller
         $categories = Category::get();
 
         return view('list', ['categories' => $categories]);
-
     }
 
     /**
@@ -40,18 +39,17 @@ class ListController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             $category = new Category;
 
             $category->category_name = $request->category_name;
 
-            $category->category_url = env('APP_URL').'/'.str_replace(' ', '-', strtolower($request->category_name));
+            $category->category_url = env('APP_URL') . '/' . str_replace(' ', '-', strtolower($request->category_name));
 
             $category->save();
 
             return redirect()->back()->with('statusCategory', 'Well Done! Category created successfully!');
-        } 
-        catch(\Exception $e){
+        } catch (\Exception $e) {
             abort(404);
         }
     }
@@ -65,21 +63,20 @@ class ListController extends Controller
     public function storeSubCategory(Request $request)
     {
         $category = Category::find($request->categoryId);
-        
-        if($category) {
+
+        if ($category) {
             $subCategory = new SubCategory;
 
             $subCategory->category_id = $request->categoryId;
 
             $subCategory->subcategory_name = $request->subcategory_name;
 
-            $subCategory->subcategory_url = $category->category_url.'/'.str_replace(' ', '-', strtolower($request->subcategory_name));
+            $subCategory->subcategory_url = $category->category_url . '/' . str_replace(' ', '-', strtolower($request->subcategory_name));
 
             $subCategory->save();
 
             return redirect()->back()->with('statusSubcategory', 'Well Done! Subcategory created successfully!');
         }
-        
     }
 
 
@@ -92,21 +89,20 @@ class ListController extends Controller
     public function storeProduct(Request $request)
     {
         $subcategory = SubCategory::find($request->subcategoryId);
-        
-        if($subcategory) {
+
+        if ($subcategory) {
             $product = new Product;
 
             $product->subcategory_id = $request->subcategoryId;
 
             $product->product_name = $request->product_name;
 
-            $product->product_url = $subcategory->subcategory_url.'/'.str_replace(' ', '-', strtolower($request->product_name));
+            $product->product_url = $subcategory->subcategory_url . '/' . str_replace(' ', '-', strtolower($request->product_name));
 
             $product->save();
 
             return redirect()->back()->with('statusProduct', 'Well Done! Product created successfully!');
         }
-        
     }
 
     /**
@@ -128,7 +124,13 @@ class ListController extends Controller
      */
     public function edit($id)
     {
-        //
+        $category = Category::find($id);
+
+        if ($category) {
+            return view('edit', ['category' => $category]);
+        } else {
+            abort(404);
+        }
     }
 
     /**
@@ -138,9 +140,39 @@ class ListController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        // Category update
+        $category = Category::find($request->id);
+        $category->category_name = $request->category_name;
+        $category->category_url = env('APP_URL') . '/' . str_replace(' ', '-', strtolower($request->category_name));
+        $category->save();
+
+        // Sub category update
+        $subcategories = SubCategory::where('category_id', $request->id)->get();
+
+        if($subcategories) {
+            foreach ($subcategories as $sub) {
+                $subcategory = SubCategory::find($sub->id);
+                $subcategory->subcategory_url = $category->category_url . '/' . str_replace(' ', '-', strtolower($subcategory->subcategory_name));
+                $subcategory->save();
+    
+                // Product update
+                $products = Product::where('subcategory_id', $subcategory->id)->get();
+    
+                if($products) {
+                    foreach ($products as $prod) {
+                        $product = Product::find($prod->id);
+                        $product->product_url = $subcategory->subcategory_url . '/' . str_replace(' ', '-', strtolower($product->product_name));
+                        $product->save();
+                    }
+                }
+                
+            }
+        }
+        
+
+        return redirect('/')->with('update', 'Well Done! Category updated successfully!');
     }
 
     /**

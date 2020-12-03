@@ -49,6 +49,12 @@
         </div>
     @endif
 
+    @if (session('update'))
+        <div class="alert alert-success">
+            {{ session('update') }}
+        </div>
+    @endif
+    
     <div class="card-body">
         <ul class="list-group mt-2">
             @isset($categories)
@@ -57,7 +63,7 @@
                 <div class="form-group row">
                     <div class="col-md-6 mt-2">
                         <label for="subcategory_name">Category:</label>
-                        <li class="list-group-item"><span class="badge badge-secondary">{{ $category->category_name }}</span> : {{ $category->category_url }}</li>
+                        <li class="list-group-item"><span class="badge badge-secondary">{{ $category->category_name }}</span> : {{ $category->category_url }} <a href="/category/edit/{{ $category->id }}" class="btn btn-primary btn-sm">Edit</a></li>
                     </div>
         
                     <div class="col-md-6">

@@ -20,6 +20,12 @@ use Illuminate\Support\Facades\Route;
 /* List all categories subcategories and products */
 Route::get('/', 'ListController@index')->name('list');
 
+/* Edit category */
+Route::get('/category/edit/{id}', 'ListController@edit')->name('category.edit');
+
+/* Update category */
+Route::post('/category/update', 'ListController@update')->name('category.update');
+
 /* Store categories */
 Route::post('/category/store', 'ListController@store')->name('category.create');
 
